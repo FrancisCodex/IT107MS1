@@ -1,0 +1,31 @@
+/* HomePage.css */
+
+.homepage {
+  /* Set your background image URL here */
+  background-image: url('../assets/background1.jpeg');
+  
+  /* Ensure the background covers the entire viewport */
+  background-size: cover;
+  background-position: center;
+  
+  /* Make the background fixed so it doesn't scroll with the content */
+  background-attachment: fixed;
+  
+  /* Set the background color as a fallback for older browsers or slow loading */
+  background-color: #000; /* Choose a background color */
+  
+  /* Add any other styles for your homepage */
+  color: #fff; /* Text color for better visibility on the background image */
+  padding: 20px;
+  margin: 0; /* Remove default margin to cover the entire viewport */
+  overflow-x: hidden; /* Hide horizontal scrollbar if needed */
+  height: 100vh; /* Set the height of the element to 100% of the viewport height */
+  display: flex; /* Use flexbox to center the content vertically and horizontally */
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+}
+
+main {
+  text-align: center; /* Center the text inside the main element */
+}

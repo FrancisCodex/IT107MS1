@@ -1,0 +1,57 @@
+
+.form {
+  width: 400px;
+  padding: 20px;
+  background-color: #fff;
+  
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow:  5px 5px 10px #d4d4d4,
+             -5px -5px 10px #ffffff;
+  text-align: center;
+}
+
+.form_title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.form__input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Style the "Forgot Password" and "Sign Up" links */
+.forgot_pass,
+.sign_up {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.forgot_pass a,
+.sign_up a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.forgot_pass a:hover,
+.sign_up a:hover {
+  text-decoration: underline;
+}
+
+.form__button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form__button:hover {
+  background-color: #0056b3;
+}
