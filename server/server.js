@@ -92,21 +92,17 @@ app.post('/register', async (req, res) => {
   });
 
 
-  // Create a custom middleware function to check authentication
-const isAuthenticatedMiddleware = (req, res, next) => {
-    // Check if the user is authenticated based on your authentication logic
-    // For example, you can check if the user has a valid token in the request headers
-    const token = req.headers.authorization; // You should modify this based on your actual token implementation
-    
+  const isAuthenticatedMiddleware = (req, res, next) => {
+    const token = req.headers.authorization;
+  
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
   
-    // Verify the token (you should implement this function)
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.userId = decoded.userId; // Store the user ID in the request for later use
-      next(); // Continue to the /cart route if authenticated
+      req.userId = decoded.userId;
+      next();
     } catch (error) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -115,16 +111,16 @@ const isAuthenticatedMiddleware = (req, res, next) => {
   // Apply the isAuthenticatedMiddleware to the /cart route
   app.get('/cart', isAuthenticatedMiddleware, (req, res) => {
     // Handle requests to the cart route for authenticated users only
-    // You can access the user's ID using req.userId
-    res.json({ message: 'This is the cart page for authenticated users.' });
+    const userId = req.userId; // You can access the user's ID using req.userId
+    res.json({ message: 'This is the cart page for authenticated users like ${userId}.' });
   });
   
   
 
   app.post('/logout', (req, res) => {
-      try {
-        res.clearCookie(token);
-        res.json({ message: 'Logout successful' });
+    try {
+      // Instead of clearing a cookie, you should send a response to the client to clear the token on the client-side
+      res.json({ message: 'Logout successful' });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });

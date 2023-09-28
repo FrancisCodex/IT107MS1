@@ -15,13 +15,24 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Routes>
-      <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/SignUp" element={<SignUp/>} />
-      </Routes>
-    </BrowserRouter>
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<Homepage />} />
+    <Route path="/login" element={<Login onLogin={handleLogin} />} />
+    <Route path="/SignUp" element={<SignUp />} />
+    <Route
+      path="/cart"
+      element={
+        isAuthenticated ? (
+          <Cart />
+        ) : (
+          <Navigate to="/login" />
+        )
+      }
+    />
+  </Routes>
+</BrowserRouter>
+
   
   );
 }

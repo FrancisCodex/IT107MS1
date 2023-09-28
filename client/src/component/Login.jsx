@@ -4,10 +4,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/global.css';
 import NavBar from './NavBar';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -17,8 +19,14 @@ function Login({ onLogin }) {
     setPassword(e.target.value);
   };
 
-  const handleSuccessfulLogin = () => {
-    toast.success('Login successful');
+  const handleSuccessfulLogin = async () => {
+    // Perform any necessary login logic here
+
+    // Set isAuthenticated to true upon successful login
+    onLogin();
+
+    // Redirect the user to the desired page (e.g., /cart)
+    navigate('/cart'); // Replace '/cart' with the path you want to redirect to
   };
 
   const handleLoginError = () => {
@@ -37,7 +45,6 @@ function Login({ onLogin }) {
       if (response.status === 200) {
         handleSuccessfulLogin();
         console.log('Login successful');
-
       } else {
         handleLoginError();
         console.error('Login failed');
