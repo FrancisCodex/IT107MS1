@@ -4,6 +4,8 @@ import Login from './component/Login';
 import SignUp from './component/Signup';
 import Homepage from './component/Homepage';
 import Cart from './component/cart';
+import Cookies from 'js-cookie'; // Import the Cookies object
+import ForgotPassword from './component/ForgetPassword';
 
 function App() {
 
@@ -20,16 +22,18 @@ function App() {
     <Route path="/" element={<Homepage />} />
     <Route path="/login" element={<Login onLogin={handleLogin} />} />
     <Route path="/SignUp" element={<SignUp />} />
+    <Route path="/ForgetPassword" element={<ForgotPassword />} />
     <Route
-      path="/cart"
-      element={
-        isAuthenticated ? (
-          <Cart />
-        ) : (
-          <Navigate to="/login" />
-        )
-      }
-    />
+  path="/cart"
+  element={
+    isAuthenticated ? (
+      <Cart authToken={Cookies.get('authToken')} />
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+
   </Routes>
 </BrowserRouter>
 

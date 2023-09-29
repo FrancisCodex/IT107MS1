@@ -1,22 +1,17 @@
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
 
-const { Pool, Client } = require('pg');
-require("dotenv").config();
+dotenv.config(); // Load environment variables from .env file
+
 const pool = new Pool({
-    user: "postgres",
-    host: "localhost",
-    database: "Employee_Database",
-    password: "admin",
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DBNAME,
+    password: process.env.DB_PASSW,
     port: process.env.DB_PORT
-})
+});
 
-pool.connect();
-
-pool.query(`select * from hr.regions`, (err, result) => {
-    if (!err) {
-        console.log(result.rows);
-    }
-    pool.end
-})
+module.exports = pool;
 
 // //importing modules
 // const {Sequelize, DataTypes} = require('sequelize')

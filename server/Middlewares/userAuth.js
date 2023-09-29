@@ -1,8 +1,8 @@
 //importing modules
 const express = require("express");
-const db = require("../Model");
+const pool = require("../Model");
 //Assigning db.users to User variable
- const User = db.users;
+ const User = pool.users;
 
 //Function to check if username or email already exist in the database
 //this is to avoid having two users with the same username and email

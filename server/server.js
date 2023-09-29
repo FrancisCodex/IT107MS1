@@ -1,10 +1,14 @@
+
 // Import necessary modules
 const express = require('express');
-const dotenv = require('dotenv').config();
 const pool = require('./database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const cookie = require('cookie');
+const dotenv = require('dotenv');
+
+dotenv.config(); // Load environment variables from .env file
 
 // Setting up your port
 const PORT = process.env.PORT || 8080;
@@ -17,6 +21,7 @@ const app = express();
 app.use(express.json());
 
 // CORS
+
 
 const allowedOrigins = ['http://localhost:5173']; // Add your frontend's URL(s) here
 const corsOptions = {
@@ -61,39 +66,47 @@ app.post('/register', async (req, res) => {
     }
   });
   
+// Login end point
+app.post('/login', async (req, res) => {
+  try {
+    const { user_email, password } = req.body;
+    const expiresIn = '1h';
 
-  // Login endpoint
-  app.post('/login', async (req, res) => {
-    try {
-      const { user_email, password } = req.body;
-      const expiresIn = '1h';
-        
-  
-      // Retrieve user from the database by email
-      const user = await pool.query('SELECT * FROM cosmos.users WHERE user_email = $1', [user_email]);
-  
-      if (user.rows.length === 0) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-  
-      // Compare the hashed password
-      const isValidPassword = await bcrypt.compare(password, user.rows[0].password);
-  
-      if (!isValidPassword) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-  
-      // Generate a JWT token for the authenticated user
-      const token = jwt.sign({ userId: user.rows[0].user_id }, "mysecret",  { expiresIn },);
-  
-      res.json({ message: 'Login successful', token });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+    // Retrieve user from the database by email
+    const userQueryResult = await pool.query('SELECT * FROM cosmos.users WHERE user_email = $1', [user_email]);
+
+    if (userQueryResult.rows.length === 0) {
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
-  });
 
-  
+    const user = userQueryResult.rows[0]; // Extract the user object from the query result
+
+    // Compare the hashed password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Generate a JWT token for the authenticated user
+    const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn });
+
+    // Set the token as a cookie with HttpOnly flag for security
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      maxAge: 3600 * 1000, // 1 hour (in milliseconds)
+      sameSite: 'strict',
+      secure: false, // Set to true if your app uses HTTPS
+      path: '/', // Specify the path where the cookie is accessible
+    });
+
+    // Set the token as a cookie with HttpOnly flag for security
+    res.json({ message: 'Login successful', token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
   const isAuthenticatedMiddleware = (req, res, next) => {
     const token = req.headers.authorization;
@@ -105,7 +118,7 @@ app.post('/register', async (req, res) => {
     }
   
     try {
-      const decoded = jwt.verify(token, "mysecret");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       console.log('Decoded token:', decoded);
       req.userId = decoded.userId;
       next();

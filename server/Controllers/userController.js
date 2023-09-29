@@ -1,10 +1,10 @@
 //importing modules
 const bcrypt = require("bcrypt");
-const db = require("../Model");
+const pool = require("../Model");
 const jwt = require("jsonwebtoken");
 
 // Assigning users to the variable User
-const User = db.users;
+const User = pool.users;
 
 //signing a user up
 //hashing users password before its saved to the database with bcrypt

@@ -4,7 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/global.css';
 import NavBar from './NavBar';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -21,8 +22,9 @@ function Login({ onLogin }) {
 
   const handleSuccessfulLogin = async (response) => {
     // Perform any necessary login logic here
-    localStorage.setItem('jwt', response.data.token);
-    console.log('Stored token:', response.data.token);
+    const token = response.data.token;
+    console.log('Stored token:', token);
+    Cookies.set('authToken', token, { expires: 1 / 24 }); // 1 hour
     // Set isAuthenticated to true upon successful login
     onLogin();
 
@@ -76,7 +78,7 @@ function Login({ onLogin }) {
           onChange={handlePasswordChange}
         />
         <div className='forgot_pass'>
-          <p><a href="/#">Forgot Password</a> </p>
+          <p><a href="/ForgetPassword">Forgot Password</a> </p>
         </div>
         <div className='sign_up'>
           <p>Don't have an account? <a href="/Signup">Sign up</a> </p>
