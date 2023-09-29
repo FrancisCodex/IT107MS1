@@ -19,9 +19,10 @@ function Login({ onLogin }) {
     setPassword(e.target.value);
   };
 
-  const handleSuccessfulLogin = async () => {
+  const handleSuccessfulLogin = async (response) => {
     // Perform any necessary login logic here
-
+    localStorage.setItem('jwt', response.data.token);
+    console.log('Stored token:', response.data.token);
     // Set isAuthenticated to true upon successful login
     onLogin();
 
@@ -43,7 +44,7 @@ function Login({ onLogin }) {
       });
 
       if (response.status === 200) {
-        handleSuccessfulLogin();
+        handleSuccessfulLogin(response);
         console.log('Login successful');
       } else {
         handleLoginError();

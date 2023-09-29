@@ -61,10 +61,12 @@ app.post('/register', async (req, res) => {
     }
   });
   
+
   // Login endpoint
   app.post('/login', async (req, res) => {
     try {
-        const { user_email, password } = req.body;
+      const { user_email, password } = req.body;
+      const expiresIn = '1h';
         
   
       // Retrieve user from the database by email
@@ -82,7 +84,7 @@ app.post('/register', async (req, res) => {
       }
   
       // Generate a JWT token for the authenticated user
-      const token = jwt.sign({ userId: user.rows[0].user_id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ userId: user.rows[0].user_id }, "mysecret",  { expiresIn },);
   
       res.json({ message: 'Login successful', token });
     } catch (error) {
@@ -91,19 +93,24 @@ app.post('/register', async (req, res) => {
     }
   });
 
+  
 
   const isAuthenticatedMiddleware = (req, res, next) => {
     const token = req.headers.authorization;
+    console.log('Received token:', token);
   
     if (!token) {
+      console.log('No token provided');
       return res.status(401).json({ message: 'Unauthorized' });
     }
   
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, "mysecret");
+      console.log('Decoded token:', decoded);
       req.userId = decoded.userId;
       next();
     } catch (error) {
+      console.error('Token verification error:', error);
       return res.status(401).json({ message: 'Unauthorized' });
     }
   };
@@ -112,7 +119,7 @@ app.post('/register', async (req, res) => {
   app.get('/cart', isAuthenticatedMiddleware, (req, res) => {
     // Handle requests to the cart route for authenticated users only
     const userId = req.userId; // You can access the user's ID using req.userId
-    res.json({ message: 'This is the cart page for authenticated users like ${userId}.' });
+    res.json({ message: `This is the cart page for authenticated users like ${userId}.` });
   });
   
   
