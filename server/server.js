@@ -74,6 +74,7 @@ app.post('/login', async (req, res) => {
 
     // Retrieve user from the database by email
     const userQueryResult = await pool.query('SELECT * FROM cosmos.users WHERE user_email = $1', [user_email]);
+    console.log('User query result:', userQueryResult.rows);
 
     if (userQueryResult.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -89,13 +90,15 @@ app.post('/login', async (req, res) => {
     }
 
     // Generate a JWT token for the authenticated user
-    const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn });
+    const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET);
+    console.log("id ", user.user_id);
+    console.log('token line(94) = ', token);
 
     // Set the token as a cookie with HttpOnly flag for security
     res.cookie('authToken', token, {
       httpOnly: true,
       maxAge: 3600 * 1000, // 1 hour (in milliseconds)
-      sameSite: 'strict',
+      sameSite: 'none',
       secure: false, // Set to true if your app uses HTTPS
       path: '/', // Specify the path where the cookie is accessible
     });
@@ -108,8 +111,8 @@ app.post('/login', async (req, res) => {
   }
 });
 
-  const isAuthenticatedMiddleware = (req, res, next) => {
-    const token = req.headers.authorization;
+const isAuthenticatedMiddleware = (req, res, next) => {
+  const token = req.headers.authorization.split(' ')[1];
     console.log('Received token:', token);
   
     if (!token) {
@@ -128,11 +131,18 @@ app.post('/login', async (req, res) => {
     }
   };
   
-  // Apply the isAuthenticatedMiddleware to the /cart route
-  app.get('/cart', isAuthenticatedMiddleware, (req, res) => {
-    // Handle requests to the cart route for authenticated users only
-    const userId = req.userId; // You can access the user's ID using req.userId
-    res.json({ message: `This is the cart page for authenticated users like ${userId}.` });
+  app.get('/cart', isAuthenticatedMiddleware, async (req, res) => {
+    try {
+      // Handle requests to the cart route for authenticated users only
+      const userId = req.userId; // You can access the user's ID using req.userId
+      console.log('Received token in /cart:', req.headers.authorization);
+      console.log('Decoded token in /cart:', req.userId);
+  
+      res.json({ message: `This is the cart page for authenticated users like ${userId}.` });
+    } catch (error) {
+      console.error('Error in /cart:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
   });
   
   

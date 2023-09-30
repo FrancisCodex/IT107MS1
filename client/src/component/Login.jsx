@@ -38,15 +38,22 @@ function Login({ onLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
+      const token = Cookies.get('authToken'); // Get the token from cookies
+      console.log('this is the token2:', token);
       const response = await axios.post('http://localhost:8080/login', {
         user_email: email,
         password,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
       });
-
+  
       if (response.status === 200) {
         handleSuccessfulLogin(response);
+        console.log('this is the token:', token);
         console.log('Login successful');
       } else {
         handleLoginError();
@@ -57,6 +64,7 @@ function Login({ onLogin }) {
       console.error('Error:', error);
     }
   };
+  
 
   return (
     <div>

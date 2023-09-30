@@ -11,15 +11,32 @@ function Cart({ authToken }) {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
+        console.log('Checking authentication...');
+        console.log(authToken);
+        
         // Check if the user is authenticated using the authToken prop
         if (!authToken) {
           throw new Error('Unauthorized'); // Unauthorized access
         }
 
-        // Rest of your code to validate the token...
+        // Perform a request to the server to validate the token
+        const response = await axios.get('http://localhost:8080/cart', {
+          headers: {
+            Authorization: `Bearer ${authToken}`, // Include the token in the Authorization header
+          },
+        });
+
+        // If the server responds with success, the token is valid, and the user is authenticated
+        if (response.status === 200) {
+          console.log('User is authenticated.');
+        } else {
+          throw new Error('Unauthorized');
+        }
       } catch (error) {
         // Handle unauthorized access here
         console.error('Unauthorized:', error);
+        console.log('Current authToken:', authToken);
+        
         navigate('/login'); // Redirect to the login page
       }
     };
@@ -33,7 +50,6 @@ function Cart({ authToken }) {
 
       if (response.status === 200) {
         // Remove the JWT token from local storage
-        sessionStorage.removeItem('jwt');
         // Remove the authentication cookie
         Cookies.remove('authToken');
         // Redirect the user to the login page after logout

@@ -29,7 +29,7 @@ function App() {
     isAuthenticated ? (
       <Cart authToken={Cookies.get('authToken')} />
     ) : (
-      <Navigate to="/login" />
+      <Navigate to="/cart" />
     )
   }
 />
